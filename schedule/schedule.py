@@ -13,7 +13,7 @@ with open('{}/databases/times.json'.format("."), "r") as jsf:
 def write(movies):
     with open('{}/databases/times.json'.format("."), 'w') as f:
         full = {}
-        full['times']=schedule
+        full['schedule']=schedule
         json.dump(full, f)
 
 @app.route("/", methods=['GET'])
@@ -74,21 +74,24 @@ def unschedule_movie(date, movieid):
     res = make_response(jsonify({"error":"movie ID not scheduled for this date"}),500)
     return 
 
-"""
 @app.route("/schedule/movie/<movieid>", methods=['DELETE'])
+#testée
 def del_movie_from_schedule(movieid):
+    movie_found = False
     for time in schedule:
-        if str(time["date"]) == str(date):
+        if str(movieid) in time["movies"]:
+            movie_found = True
             time["movies"].remove(str(movieid))
-            write(schedule)
-            return make_response(jsonify(time),200)
-
-    res = make_response(jsonify({"error":"movie ID not scheduled for this date"}),500)
-    return 
-"""
+    if movie_found:
+        write(schedule)
+        return make_response(jsonify(time),200)
+    else:
+        res = make_response(jsonify({"error":"movie ID not scheduled"}),500)
+        return 
 
 @app.route("/schedule/date/<date>", methods=['DELETE'])
-def del_date_from_schedule(date, movieid):
+#testée
+def del_date_from_schedule(date):
     for time in schedule:
         if str(time["date"]) == str(date):
             schedule.remove(time)
