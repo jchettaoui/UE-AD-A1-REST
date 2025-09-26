@@ -14,7 +14,7 @@ def write(movies):
     with open('{}/databases/times.json'.format("."), 'w') as f:
         full = {}
         full['schedule']=schedule
-        json.dump(full, f)
+        json.dump(full, f, indent=2)
 
 @app.route("/", methods=['GET'])
 def home():
@@ -43,6 +43,14 @@ def get_schedule_bymovieid(movieid):
       return res
     else: 
       return make_response(jsonify({"error":"Movie Id not found"}),500)
+    
+@app.route("/schedule/<date>/<movie_id>", methods=["GET"])
+def is_movie_scheduled(date: str, movie_id: str):
+    for time in schedule:
+        if time["date"] == date:
+            if movie_id in time["movies"]:
+                return make_response(jsonify({"message":"Yes, the movie is scheduled at this date.", "date":date, "movie_id": movie_id}), 200)
+    return make_response(jsonify({"message":"No, this movie isn't scheduled at this date.", "date":date, "movie_id": movie_id}), 404)
 
 @app.route("/schedule/<date>/<movieid>", methods=['POST'])
 #testée

@@ -1,0 +1,76 @@
+openapi: '3.0.3'
+info:
+  title: Booking service
+  version: '1.0'
+paths:
+  /booking:
+    description: Get all booking (need admin id)
+    parameters:
+      - in: query
+        name: admin_id
+        schema:
+          type: string
+        required: false
+  /booking/<user_id>:
+    get:
+      description: Get all booking from a user
+  /booking/<user_id>/<date>:
+    get:
+      description: Get all booking from a user at a certain date
+      parameters:
+        - in: query
+          name: details
+          schema:
+            type: string
+            enum:
+              - yes
+              - no
+            default: no
+          required: false
+          description: Return movie details with the booking data
+      responses:
+        '200':
+          description: OK
+  /booking/{user_id}/{date}/{movie_id}:
+    parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: date
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: movie_id
+        schema:
+          type: string
+        required: true
+    get:
+      description: Get details about a booking
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Booking not found (either user, date or movie)
+    post:
+      description: Book a reservation to see a movie for a user at a certain date 
+      responses:
+        '201':
+          description: OK
+        '400':
+          description: Invalid date format
+        '404':
+          description: Not found (either user or movie)
+    delete:
+      description: Delete a reservation to see a movie for a user at a certain date 
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid date format
+        '404':
+          description: Not found (either user or movie)
+
