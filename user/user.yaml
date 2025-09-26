@@ -1,0 +1,52 @@
+openapi: '3.0.3'
+info:
+  title: API Title
+  version: '1.0'
+paths:
+  /users/{user_id}:
+    get:
+      description: 'Get a user data using its id'
+      parameters: []
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: User not found
+    delete:
+      description: 'Delete the user with the specified id'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: User not found
+  /users/{user_id}/{user_name}:
+    post:
+      description: 'Create a new user based on its id and name'
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: User already exists (based on user_id)
+    put:
+      description: "Change user's name"
+      responses:
+        '200':
+          description: Name changed
+        '404':
+          description: User not found
+  /users/{user_id}/admin/yes:
+    put:
+      description: 'Make the user an administrator'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: User not found
+  /users/{user_id}/admin/no:
+    put:
+      description: 'Demote an administrator to a regular user'
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: User not found
