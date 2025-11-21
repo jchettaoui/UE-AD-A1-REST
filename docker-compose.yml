@@ -1,7 +1,25 @@
 services:
+  booking:
+    build: ./booking/
+    command: "-j --user-service-url 'http://user:3203' --movie-service-url 'http://movie:3200' --schedule-service-url 'http://schedule:3202'"
+    hostname: booking
+    ports:
+      - "3201:3201"
   movie:
     build: ./movie/
+    command: "-j --user-service-url  'http://user:3203'"
+    hostname: movie
     ports:
       - "3200:3200"
-  # to continue
-
+  schedule:
+    build: ./schedule/
+    command: "-j --user-service-url  'http://user:3203' --movie-service-url  'http://movie:3200'"
+    hostname: schedule
+    ports:
+      - "3202:3202"
+  user:
+    build: ./user/
+    command: '-j'
+    hostname: user
+    ports:
+      - "3203:3203"

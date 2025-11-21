@@ -19,9 +19,9 @@ PORT = 3201
 HOST = '0.0.0.0'
 
 # External services
-MOVIE_API = "http://localhost:3200"
-SCHEDULE_API = "http://localhost:3202"
-USER_API = "http://localhost:3203"
+DEFAULT_MOVIE_API_URL = "http://localhost:3200"
+DEFAULT_SCHEDULE_API_URL = "http://localhost:3202"
+DEFAULT_USER_API_URL = "http://localhost:3203"
 
 # Responses
 RESPONSES_403 = {"success": False, "message": "Unauthorized access"}
@@ -34,9 +34,9 @@ RESPONSES_403 = {"success": False, "message": "Unauthorized access"}
 
 app = Flask(__name__)
 database : BookingDatabaseConnector = None
-movie_api = MovieApiWrapper(MOVIE_API)
-schedule_api = ScheduleApiWrapper(SCHEDULE_API)
-user_api = UserApiWrapper(USER_API)
+user_api : UserApiWrapper = None
+movie_api : MovieApiWrapper = None
+schedule_api : ScheduleApiWrapper = None
 
 ########################################################################################
 #                                                                                      #
@@ -51,6 +51,9 @@ def parse_args() -> None:
    parser.add_argument("-m", "--mongo", help="Choose mongodb as data storage", action="store_true")
    parser.add_argument("-j", "--json", help="Choose JSON file as data storage", action="store_true")
    parser.add_argument("--storage", help="Specify where the data is stored (either a json file or a mongo url)")
+   parser.add_argument("--user-service-url", help="Specify the url of the user service", default=DEFAULT_USER_API_URL)
+   parser.add_argument("--movie-service-url", help="Specify the url of the movie service", default=DEFAULT_MOVIE_API_URL)
+   parser.add_argument("--schedule-service-url", help="Specify the url of the schedule service", default=DEFAULT_SCHEDULE_API_URL)
 
    args = parser.parse_args()
 
@@ -75,13 +78,17 @@ def parse_args() -> None:
    else:
       destination = args.storage
 
-   global database
+   global database, user_api, movie_api, schedule_api
 
    if args.mongo:
       database = BookingDatabaseConnectorMongo(destination)
    else:
       # Json by default
       database = BookingDatabaseConnectorJson(destination)
+
+   user_api = UserApiWrapper(args.user_service_url)
+   movie_api = MovieApiWrapper(args.movie_service_url)
+   schedule_api = ScheduleApiWrapper(args.schedule_service_url)
 
 
 def authorization_is_admin() -> bool:
