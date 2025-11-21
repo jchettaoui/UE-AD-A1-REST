@@ -20,9 +20,7 @@ PORT = 3200
 HOST = '0.0.0.0'
 
 # External services
-MOVIE_API = "http://localhost:3200"
-SCHEDULE_API = "http://localhost:3202"
-USER_API = "http://localhost:3203"
+DEFAULT_USER_API_URL = "http://localhost:3203"
 
 # Responses
 RESPONSES_403 = {"success": False, "message": "Unauthorized access"}
@@ -36,7 +34,7 @@ RESPONSES_403 = {"success": False, "message": "Unauthorized access"}
 app = Flask(__name__)
 database_movie : MovieDatabaseConnector = None
 database_actor : ActorDatabaseConnector = None
-user_api = UserApiWrapper(USER_API)
+user_api : UserApiWrapper = None
 
 #######################################################################################
 #                                                                                     #
@@ -45,60 +43,62 @@ user_api = UserApiWrapper(USER_API)
 #######################################################################################
 
 def parse_args() -> None:
-   """Parse command line arguments to choose data storage method and destination."""
+    """Parse command line arguments to choose data storage method and destination."""
 
-   parser = argparse.ArgumentParser()
-   parser.add_argument("-m", "--mongo", help="Choose mongodb as data storage", action="store_true")
-   parser.add_argument("-j", "--json", help="Choose JSON file as data storage", action="store_true")
-   parser.add_argument("--storage_movies", help="Specify where the movies data is stored (either a json file or a mongo url)")
-   parser.add_argument("--storage_actors", help="Specify where the actors data is stored (either a json file or a mongo url)")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-m", "--mongo", help="Choose mongodb as data storage", action="store_true")
+    parser.add_argument("-j", "--json", help="Choose JSON file as data storage", action="store_true")
+    parser.add_argument("--storage-movies", help="Specify where the movies data is stored (either a json file or a mongo url)")
+    parser.add_argument("--storage-actors", help="Specify where the actors data is stored (either a json file or a mongo url)")
+    parser.add_argument("--user-service-url", help="Specify the url of the user service", default=DEFAULT_USER_API_URL)
 
-   args = parser.parse_args()
+    args = parser.parse_args()
 
-   if not args.mongo and not args.json:
-      print("Please select a data storage method when starting the app : \n\tJSON : -j \n\tMongoDB : -m\nYou can also specify the storage destination with the flag '--storage'")
-      exit(1)
+    if not args.mongo and not args.json:
+        print("Please select a data storage method when starting the app : \n\tJSON : -j \n\tMongoDB : -m\nYou can also specify the storage destination with the flag '--storage'")
+        exit(1)
 
-   if args.mongo and args.json:
-      print("You can only choose one data storage method !")
-      exit(1)
+    if args.mongo and args.json:
+        print("You can only choose one data storage method !")
+        exit(1)
 
-   destination_movies = ""
-   if not args.storage_movies:
-      print("No storage_movies destination found. Using default value :", end="")
-      if args.mongo:
-         print(DEFAULT_MONGO_DESTINATION)
-         destination_movies = DEFAULT_MONGO_DESTINATION
-      else:
-         # Json by default
-         print(DEFAULT_JSON_MOVIE_DESTINATION)
-         destination_movies = DEFAULT_JSON_MOVIE_DESTINATION
-   else:
-      destination_movies = args.storage_movies
+    destination_movies = ""
+    if not args.storage_movies:
+        print("No storage_movies destination found. Using default value :", end="")
+        if args.mongo:
+            print(DEFAULT_MONGO_DESTINATION)
+            destination_movies = DEFAULT_MONGO_DESTINATION
+        else:
+            # Json by default
+            print(DEFAULT_JSON_MOVIE_DESTINATION)
+            destination_movies = DEFAULT_JSON_MOVIE_DESTINATION
+    else:
+        destination_movies = args.storage_movies
 
-   destination_actors = ""
-   if not args.storage_actors:
-      print("No storage_actors destination found. Using default value :", end="")
-      if args.mongo:
-         print(DEFAULT_MONGO_DESTINATION)
-         destination_actors = DEFAULT_MONGO_DESTINATION
-      else:
-         # Json by default
-         print(DEFAULT_JSON_ACTOR_DESTINATION)
-         destination_actors = DEFAULT_JSON_ACTOR_DESTINATION
-   else:
-      destination_actors = args.storage_actors
+    destination_actors = ""
+    if not args.storage_actors:
+        print("No storage_actors destination found. Using default value :", end="")
+        if args.mongo:
+            print(DEFAULT_MONGO_DESTINATION)
+            destination_actors = DEFAULT_MONGO_DESTINATION
+        else:
+            # Json by default
+            print(DEFAULT_JSON_ACTOR_DESTINATION)
+            destination_actors = DEFAULT_JSON_ACTOR_DESTINATION
+    else:
+        destination_actors = args.storage_actors
 
-   global database_movie
-   global database_actor
+    global database_movie, database_actor, user_api
 
-   if args.mongo:
-      database_movie = MovieDatabaseMongoConnector(destination_movies)
-      database_actor = ActorDatabaseMongoConnector(destination_actors)
-   else:
-      # Json by default
-      database_movie = MovieDatabaseJsonConnector(destination_movies)
-      database_actor = ActorDatabaseJsonConnector(destination_actors)
+    if args.mongo:
+        database_movie = MovieDatabaseMongoConnector(destination_movies)
+        database_actor = ActorDatabaseMongoConnector(destination_actors)
+    else:
+        # Json by default
+        database_movie = MovieDatabaseJsonConnector(destination_movies)
+        database_actor = ActorDatabaseJsonConnector(destination_actors)
+    
+    user_api = UserApiWrapper(args.user_service_url)    
 
 
 def authorization_is_admin() -> bool:
