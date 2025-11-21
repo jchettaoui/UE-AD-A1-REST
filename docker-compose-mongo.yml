@@ -1,7 +1,7 @@
 services:
   booking:
     build: ./booking/
-    command: "-m --storage 'mongodb://root:example@mongo:27017/' --user-service-url  'http://user:3203' --movie-service-url  'http://movie:3200' --schedule-service-url 'http://schedule:3202'"
+    command: "-m --storage 'mongodb://root:example@mongo:27017/' --user-service-url  'http://user:3203' --movie-service-url  'http://movie:3200' --schedule-service-url 'schedule:3202'"
     depends_on:
       - mongo
     hostname: booking
