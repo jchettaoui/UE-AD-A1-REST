@@ -1,114 +1,183 @@
-from flask import Flask, render_template, request, jsonify, make_response
-import json
-from werkzeug.exceptions import NotFound
+import argparse
 
-app = Flask(__name__)
+from flask import Flask, request, jsonify, make_response
 
+from model.api import MovieApiWrapper, UserApiWrapper
+from model.db import ScheduleDatabaseConnector, ScheduleDatabaseJsonConnector, ScheduleDatabaseMongoConnector
+
+########################################################################################
+#                                                                                      #
+#                                    CONFIGURATION                                     #
+#                                                                                      #
+########################################################################################
+
+# Storage
+DEFAULT_JSON_DESTINATION = "./databases/times.json"
+DEFAULT_MONGO_DESTINATION = "mongodb://root:example@localhost:27017/"
+
+# Web app
 PORT = 3202
 HOST = '0.0.0.0'
 
-with open('{}/databases/times.json'.format("."), "r") as jsf:
-   schedule = json.load(jsf)["schedule"]
+# External services
+MOVIE_API = "http://localhost:3200"
+USER_API = "http://localhost:3203"
 
-def write(movies):
-    with open('{}/databases/times.json'.format("."), 'w') as f:
-        full = {}
-        full['schedule']=schedule
-        json.dump(full, f, indent=2)
+# Responses
+RESPONSES_403 = {"success": False, "message": "Unauthorized access"}
+
+########################################################################################
+#                                                                                      #
+#                                  VARIABLES GLOBALES                                  #
+#                                                                                      #
+########################################################################################
+
+app = Flask(__name__)
+database : ScheduleDatabaseConnector = None
+user_api = UserApiWrapper(USER_API)
+movie_api = MovieApiWrapper(MOVIE_API)
+
+#######################################################################################
+#                                                                                     #
+#                                 FONCTIONS UTILITAIRES                               #
+#                                                                                     #
+#######################################################################################
+
+def parse_args() -> None:
+   """Parse command line arguments to choose data storage method and destination."""
+
+   parser = argparse.ArgumentParser()
+   parser.add_argument("-m", "--mongo", help="Choose mongodb as data storage", action="store_true")
+   parser.add_argument("-j", "--json", help="Choose JSON file as data storage", action="store_true")
+   parser.add_argument("--storage", help="Specify where the data is stored (either a json file or a mongo url)")
+
+   args = parser.parse_args()
+
+   if not args.mongo and not args.json:
+      print("Please select a data storage method when starting the app : \n\tJSON : -j \n\tMongoDB : -m\nYou can also specify the storage destination with the flag '--storage'")
+      exit(1)
+
+   if args.mongo and args.json:
+      print("You can only choose one data storage method !")
+      exit(1)
+
+   destination = ""
+   if not args.storage:
+      print("No storage destination found. Using default value :", end="")
+      if args.mongo:
+         print(DEFAULT_MONGO_DESTINATION)
+         destination = DEFAULT_MONGO_DESTINATION
+      else:
+         # Json by default
+         print(DEFAULT_JSON_DESTINATION)
+         destination = DEFAULT_JSON_DESTINATION
+   else:
+      destination = args.storage
+
+   global database
+
+   if args.mongo:
+      database = ScheduleDatabaseMongoConnector(destination)
+   else:
+      # Json by default
+      database = ScheduleDatabaseJsonConnector(destination)
+
+
+def authorization_is_admin() -> bool:
+   auth_value = request.headers.get('Authorization')
+   if auth_value is None:
+      return False
+   return user_api.is_user_an_administrator(auth_value)
+
+#######################################################################################
+#                                                                                     #
+#                                        ROUTES                                       #
+#                                                                                     #
+#######################################################################################
 
 @app.route("/", methods=['GET'])
 def home():
    return "<h1 style='color:blue'>Welcome to the Showtime service!</h1>"
 
+
 @app.route("/schedule/<date>", methods=['GET'])
-#testée
-def get_schedule_bydate(date):
-    for time in schedule:
-        if str(time["date"]) == str(date):
-            res = make_response(jsonify(time),200)
-            return res
-    return make_response(jsonify({"error":"Date not found"}),500)
+def get_schedule_bydate(date: str):
+    schedule = database.get_schedule_by_date(date)
+    if schedule is None:
+        return make_response(jsonify({"error":"Date not found"}),404)
+
+    return make_response(jsonify(schedule), 200)
+
 
 @app.route("/schedule/movie/<movieid>", methods=['GET'])
-#testée
 def get_schedule_bymovieid(movieid):
-    find_movie = False
-    date_list = []
-    for time in schedule:
-        if str(movieid) in time["movies"]:
-            find_movie = True
-            date_list.append(time)
-    if find_movie :
-      res = make_response(jsonify(date_list),200)
-      return res
-    else: 
-      return make_response(jsonify({"error":"Movie Id not found"}),500)
+    schedule = database.get_schedule_by_movieid(movieid)
+    if schedule is None:
+        return make_response(jsonify({"error":"Date not found"}),404)
+
+    return make_response(jsonify(schedule), 200)
     
+
 @app.route("/schedule/<date>/<movie_id>", methods=["GET"])
 def is_movie_scheduled(date: str, movie_id: str):
-    for time in schedule:
-        if time["date"] == date:
-            if movie_id in time["movies"]:
-                return make_response(jsonify({"message":"Yes, the movie is scheduled at this date.", "date":date, "movie_id": movie_id}), 200)
+    schedules = database.get_schedule_by_movieid(movie_id)
+    for s in schedules:       
+        if s["date"] == date:
+            return make_response(jsonify({"message":"Yes, the movie is scheduled at this date.", "date":date, "movie_id": movie_id}), 200)
     return make_response(jsonify({"message":"No, this movie isn't scheduled at this date.", "date":date, "movie_id": movie_id}), 404)
 
+
 @app.route("/schedule/<date>/<movieid>", methods=['POST'])
-#testée
-def schedule_movie(date,movieid):
-    for time in schedule:
-         if str(time["date"]) == str(date):
-            if str(movieid) in time["movies"]:
-               return make_response(jsonify({"error":"The movie is already scheduled at this date"}),500)
-            else: 
-               time["movies"].append(str(movieid))
-               write(schedule)
-               res = make_response(jsonify({"message":"movie scheduled"}),200)
-               return res
-   #sinon, la date n'a pas ete trouve, il faut la rajouter
-    schedule.append({"date": str(date), "movies": [str(movieid)] })
-    write(schedule)
-    res = make_response(jsonify({"message":"movie scheduled"}),200)
-    return res
+def schedule_movie(date, movieid):
+    if not authorization_is_admin():
+        return make_response(jsonify(RESPONSES_403), 403)
+
+    schedule_added = database.add_movie_to_date(date, movieid)
+    if schedule_added is None:
+        database.add_date_to_schedule({"date": date, "movies": [movieid]})
+    return make_response(jsonify({"message":"movie scheduled", "schedule": schedule_added}), 201)
+
 
 @app.route("/schedule/<date>/<movieid>", methods=['DELETE'])
-#testée
 def unschedule_movie(date, movieid):
-    for time in schedule:
-        if str(time["date"]) == str(date):
-            time["movies"].remove(str(movieid))
-            write(schedule)
-            return make_response(jsonify(time),200)
+    if not authorization_is_admin():
+        return make_response(jsonify(RESPONSES_403), 403)
 
-    res = make_response(jsonify({"error":"movie ID not scheduled for this date"}),500)
-    return 
+    unscheduled = database.delete_movie_from_date(date, movieid)
+    if unscheduled is None:
+        return make_response(jsonify({"error":"movie ID not scheduled for this date"}),404)
+    return make_response(jsonify({"message":"movie unscheduled", "schedule": unscheduled}),200)
+
 
 @app.route("/schedule/movie/<movieid>", methods=['DELETE'])
-#testée
 def del_movie_from_schedule(movieid):
-    movie_found = False
-    for time in schedule:
-        if str(movieid) in time["movies"]:
-            movie_found = True
-            time["movies"].remove(str(movieid))
-    if movie_found:
-        write(schedule)
-        return make_response(jsonify(time),200)
-    else:
-        res = make_response(jsonify({"error":"movie ID not scheduled"}),500)
-        return 
+    if not authorization_is_admin():
+        return make_response(jsonify(RESPONSES_403), 403)
+
+    deleted = database.delete_movie_from_schedule(movieid)
+    if deleted is None:
+        return make_response(jsonify({"error":"movie ID not scheduled"}), 400)
+    return make_response(jsonify(deleted), 200)
+
 
 @app.route("/schedule/date/<date>", methods=['DELETE'])
-#testée
 def del_date_from_schedule(date):
-    for time in schedule:
-        if str(time["date"]) == str(date):
-            schedule.remove(time)
-            write(schedule)
-            return make_response(jsonify(time),200)
+    if not authorization_is_admin():
+        return make_response(jsonify(RESPONSES_403), 403)
 
-    res = make_response(jsonify({"error":"date not found"}),500)
-    return res
+    deleted = database.delete_date_from_schedule(date)
+    if deleted is None:
+       return make_response(jsonify({"error":"date not found"}),500)
+
+    return make_response(jsonify(deleted), 200)
+
+########################################################################################
+#                                                                                      #
+#                                      DEMARRAGE                                       #
+#                                                                                      #
+########################################################################################
 
 if __name__ == "__main__":
+   parse_args()
    print("Server running in port %s"%(PORT))
    app.run(host=HOST, port=PORT)

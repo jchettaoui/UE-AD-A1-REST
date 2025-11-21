@@ -2,21 +2,53 @@ openapi: '3.0.3'
 info:
   title: Booking service
   version: '1.0'
+tags:
+  - name: bookings
 paths:
-  /booking:
-    description: Get all booking (need admin id)
+  /bookings:
+    get:
+      tags:
+        - bookings
+      description: Get all booking (need admin id)
+      security:
+        - UsernameAuth: []
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserRecordList"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
+  
+  /booking/{user_id}:
     parameters:
-      - in: query
-        name: admin_id
-        schema:
-          type: string
-        required: false
-  /booking/<user_id>:
+      - $ref: "#/components/parameters/UserId"
     get:
-      description: Get all booking from a user
-  /booking/<user_id>/<date>:
+      description: Get all bookings of one user
+      tags:
+        - bookings
+      security:
+        - UsernameAuth: []
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingRecordList"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
+        '404':
+          $ref: "#/components/responses/InvalidField"
+  
+  /booking/{user_id}/{date}:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
+      - $ref: "#/components/parameters/Date"
     get:
-      description: Get all booking from a user at a certain date
+      description: Get all bookings from a user at a certain date
       parameters:
         - in: query
           name: details
@@ -27,50 +59,196 @@ paths:
               - no
             default: no
           required: false
-          description: Return movie details with the booking data
+      tags:
+        - bookings
+      security:
+        - UsernameAuth: []
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BaseResponse"
+                  - oneOf:
+                    - $ref: "#/components/schemas/DetailedBookingRecord"
+                    - $ref: "#/components/schemas/BookingRecord"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
+        '404':
+          $ref: "#/components/responses/InvalidField"
+        
+          
   /booking/{user_id}/{date}/{movie_id}:
     parameters:
-      - in: path
-        name: user_id
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: date
-        schema:
-          type: string
-        required: true
-      - in: path
-        name: movie_id
-        schema:
-          type: string
-        required: true
+      - $ref: "#/components/parameters/UserId"
+      - $ref: "#/components/parameters/Date"
+      - $ref: "#/components/parameters/MovieId"
+      
     get:
       description: Get details about a booking
+      tags:
+        - bookings
+      security:
+        - UsernameAuth: []
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingRecord"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
         '404':
-          description: Booking not found (either user, date or movie)
+          $ref: "#/components/responses/InvalidField"
+    
     post:
       description: Book a reservation to see a movie for a user at a certain date 
+      tags:
+        - bookings
+      security:
+        - UsernameAuth: []
       responses:
         '201':
-          description: OK
+          $ref: "#/components/responses/BookingCreated"
         '400':
-          description: Invalid date format
+          $ref: "#/components/responses/InvalidField"
         '404':
-          description: Not found (either user or movie)
+          $ref: "#/components/responses/InvalidField"
+    
     delete:
       description: Delete a reservation to see a movie for a user at a certain date 
+      tags:
+        - bookings
+      security:
+        - UsernameAuth: []
       responses:
         '200':
           description: OK
-        '400':
-          description: Invalid date format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookingRecord"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
         '404':
-          description: Not found (either user or movie)
+          $ref: "#/components/responses/InvalidField"
+          
+components:
+  securitySchemes:
+    UsernameAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+  parameters:
+    UserId:
+      name: user_id
+      description: Identifier of the user
+      in: path  
+      schema:
+        type: string
+      required: true
+    Date:
+      name: date
+      description: Date of the booking
+      in: path  
+      schema:
+        type: string
+      required: true
+    MovieId:
+      name: movie_id
+      description: Identifier of the movie
+      in: path  
+      schema:
+        type: string
+      required: true
+  schemas:
+    BaseResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    MovieDetails:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        rating:
+          type: number
+        director:
+          type: string
+    UserRecord:
+      type: object
+      properties:
+        userid:
+          type: string
+        dates:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookingRecordList"
+    UserRecordList:
+      type: array
+      items:
+        $ref: "#/components/schemas/UserRecord"
+    BookingRecord:
+      type: object
+      properties:
+        date:
+          type: string
+        movies:
+          type: array
+          items:
+            type: string
+    DetailedBookingRecord:
+      type: object
+      properties:
+        date:
+          type: string
+        movies:
+          type: array
+          items:
+            $ref: "#/components/schemas/MovieDetails"
+    BookingRecordList:
+      type: array
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/BookingRecordList"
+          - $ref: "#/components/schemas/DetailedBookingRecord"
+  responses:
+    InvalidField:
+      description: 'One of the parameters is either unknown or invalid'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/BaseResponse"
+              - type: object
+                properties:
+                  error_field:
+                    type: string
+                  error_value:
+                    type: string
+    UnauthorizedAccess:
+      description: 'Insufficient privileges'
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+    BookingCreated:
+      description: 'Booking record created'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/BaseResponse"
+              - $ref: "#/components/schemas/BookingRecord"
+    BookingDeleted:
+      description: 'Booking record deleted'
+    
 
