@@ -1,0 +1,198 @@
+openapi: '3.0.3'
+info:
+  title: Schedule service
+  version: '1.0'
+tags:
+  - name: schedule
+paths:
+  /schedule/{date}:
+    parameters:
+      - $ref: "#/components/parameters/Date"
+    get:
+      description: "Get all movies scheduled at a specific date"
+      tags:
+        - schedule
+      responses:
+        '200':
+          $ref: "#/components/responses/MovieScheduled"
+
+
+  /schedule/{date}/{movie_id}:
+    parameters:
+      - $ref: "#/components/parameters/Date"
+      - $ref: "#/components/parameters/MovieId"
+    get:
+      description: "Get details about a movie scheduled at a specific date"
+      tags:
+        - schedule
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BaseResponse"
+                  - $ref: "#/components/schemas/MovieDetails"
+        '404':
+          $ref: "#/components/responses/InvalidField"
+    post:
+      description: "Schedule a movie at a specific date"
+      tags:
+        - schedule
+      security:
+        - UsernameAuth: []
+      responses:
+        '201':
+          $ref: "#/components/responses/MovieScheduled"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
+        '404':
+          $ref: "#/components/responses/InvalidField"
+    delete:
+      description: "Unschedule a movie at a specific date"
+      tags:
+        - schedule
+      security:
+        - UsernameAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BaseOK"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
+        '404':
+          $ref: "#/components/responses/InvalidField"
+
+  /schedule/date/{date}:
+    parameters:
+      - $ref: "#/components/parameters/Date"
+    delete:
+      description: "Unschedule all movies at a specific date"
+      tags:
+        - schedule
+      security:
+        - UsernameAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BaseOK"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
+        '404':
+          $ref: "#/components/responses/InvalidField"
+
+  /schedule/movie/{movie_id}:
+    parameters:
+      - $ref: "#/components/parameters/MovieId"
+    get:
+      description: "Get all dates where a specific movie is scheduled"
+      tags:
+        - schedule
+      responses:
+        '200':
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/BaseResponse"
+                  - type: object
+                    properties:
+                      movie_id:
+                        type: string
+                      dates:
+                        type: array
+                        items:
+                          type: string
+        '404':
+          $ref: "#/components/responses/InvalidField"
+    delete:
+      description: "Unschedule a movie from all dates"
+      tags:
+        - schedule
+      security:
+        - UsernameAuth: []
+      responses:
+        '200':
+          $ref: "#/components/responses/BaseOK"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
+        '404':
+          $ref: "#/components/responses/InvalidField"
+
+components:
+  securitySchemes:
+    UsernameAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+  parameters:
+    Date:
+      name: date
+      description: Date of the booking
+      in: path  
+      schema:
+        type: string
+      required: true
+    MovieId:
+      name: movie_id
+      description: Identifier of the movie
+      in: path  
+      schema:
+        type: string
+      required: true
+  schemas:
+    BaseResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+    MovieDetails:
+      type: object
+      properties:
+        id: 
+          type: string
+    Schedule:
+      type: object
+      properties:
+        date:
+          type: string
+        movies:
+          type: array
+          items:
+            type: string
+  responses:
+    BaseOK:
+      description: "OK"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+    MovieScheduled:
+      description: "Movie scheduled"
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/BaseResponse"
+              - $ref: "#/components/schemas/Schedule"
+    UnauthorizedAccess:
+      description: "Unauthorized access"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BaseResponse"
+    InvalidField:
+      description: 'One of the parameters is either unknown or invalid'
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/BaseResponse"
+              - type: object
+                properties:
+                  error_field:
+                    type: string
+                  error_value:
+                    type: string

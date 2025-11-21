@@ -1,52 +1,230 @@
 openapi: '3.0.3'
 info:
-  title: API Title
+  title: User service
   version: '1.0'
+tags:
+  - name: users
 paths:
+  /users:
+    get:
+      description: 'Get a list of all the user'
+      tags:
+        - users
+      security:
+        - UsernameAuth: []
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserList"
+        '403':
+            $ref: "#/components/responses/UnauthorizedAccess"
+
   /users/{user_id}:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
     get:
       description: 'Get a user data using its id'
-      parameters: []
+      tags:
+        - users
+      security:
+        - UsernameAuth: []
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '403':
+          $ref: "#/components/responses/UnauthorizedAccess"
         '404':
-          description: User not found
+          $ref: "#/components/responses/UserNotFound"
     delete:
       description: 'Delete the user with the specified id'
+      tags:
+        - users
+      security:
+        - UsernameAuth: []
       responses:
         '200':
-          description: OK
+          description: 'User deleted'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithMessage"
+        '403':
+            $ref: "#/components/responses/UnauthorizedAccess"
         '404':
-          description: User not found
+          $ref: "#/components/responses/UserNotFound"
   /users/{user_id}/{user_name}:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
+      - $ref: "#/components/parameters/UserName"
     post:
       description: 'Create a new user based on its id and name'
+      tags:
+        - users
       responses:
         '201':
-          description: User created
+          description: 'User created'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserWithMessage"
         '400':
-          description: User already exists (based on user_id)
+          description: 'user_id already exists'
     put:
       description: "Change user's name"
+      tags:
+        - users
       responses:
         '200':
           description: Name changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '403':
+            $ref: "#/components/responses/UnauthorizedAccess"
         '404':
-          description: User not found
+          $ref: "#/components/responses/UserNotFound"
+  /users/{user_id}/admin:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
+    get:
+      description: 'Check wether the user is an administrator or not'
+      tags:
+        - users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userid:
+                    type: string
+                  admin:
+                    type: boolean
+        '404':
+          $ref: "#/components/responses/UserNotFound"
   /users/{user_id}/admin/yes:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
     put:
       description: 'Make the user an administrator'
+      tags:
+        - users
+      security:
+        - UsernameAuth: []
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAdminChange"
+        '403':
+            $ref: "#/components/responses/UnauthorizedAccess"
         '404':
-          description: User not found
+          $ref: "#/components/responses/UserNotFound"
   /users/{user_id}/admin/no:
+    parameters:
+      - $ref: "#/components/parameters/UserId"
     put:
       description: 'Demote an administrator to a regular user'
+      tags:
+        - users
+      security:
+        - UsernameAuth: []
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAdminChange"
+        '403':
+            $ref: "#/components/responses/UnauthorizedAccess"
         '404':
-          description: User not found
+          $ref: "#/components/responses/UserNotFound"
+
+components:
+  securitySchemes:
+    UsernameAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+  schemas:
+    User:
+      type: object
+      properties:
+        id: 
+          type: string
+        name:
+          type: string
+        last_active:
+          type: integer
+        admin:
+          type: boolean
+    UserList:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+    UserAdminChange:
+      type: object
+      properties:
+        message: 
+          type: string
+        userid:
+          type: string
+    UserError:
+      type: object
+      properties:
+        error:
+          type: string
+    UserWithMessage:
+      type: object
+      properties:
+        message:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+  parameters:
+    UserId:
+      name: user_id
+      description: Identifier of the user
+      in: path  
+      schema:
+        type: string
+      required: true
+    UserName:
+      name: user_name
+      description: Name of the user
+      in: path
+      schema:
+        type: string
+      required: true
+  responses:
+    UnauthorizedAccess:
+      description: 'Acess to this route is restricted'
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserError"
+    UserAlreadyExists:
+      description: 'User already exists'
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserError"
+    UserNotFound:
+      description: 'User not found'
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserError"
