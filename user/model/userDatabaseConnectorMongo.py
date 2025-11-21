@@ -12,6 +12,7 @@ class UserDatabaseMongoConnector(UserDatabaseConnector):
         self._client = MongoClient(self._db_url)
         self._db = self._client["user"]
         print(f"Initialized User Database Json Connector with file_path: {db_url}")
+        self._init_superuser()
         
     def get_users(self) -> List[dict]:
         collection = self._db["user"]
@@ -39,3 +40,13 @@ class UserDatabaseMongoConnector(UserDatabaseConnector):
     def delete_user(self, user_id: str) -> None:
         collection = self._db["user"]
         collection.delete_one({"id": user_id})
+
+    # private
+
+    def _init_superuser(self):
+        if self.get_user_by_id("admin") is None:
+            self.create_user({
+                "id": "admin",
+                "name": "Admin",
+                "admin": True
+            })
