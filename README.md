@@ -64,3 +64,7 @@ docker compose -f docker-compose.yml up --build
 # Version MongoDB
 docker compose -f docker-compose-mongo.yml up --build
 ``` 
+
+# Tests avec Insomnia
+
+Le fichier `UE-AD-A1-MIXTE.yaml` décrit une collection de requêtes Insomnia pour tester les différentes routes proposées par les services.

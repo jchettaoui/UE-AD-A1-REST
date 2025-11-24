@@ -20,9 +20,9 @@ Ce service permet de gérer les connexions des utlisateurs
 
 ## Description des flags
 
-- "-j" : Importer la base depuis un fichier Json
-- "-m" : Importe la base avec MongoDB
-- "--storage" : Specifier l'endroit ou se trouve la base à importer, si rien n'est précisé, une destination par défaut est        utilisée
+- `-j` : Importer la base depuis un fichier Json
+- `-m` : Importe la base avec MongoDB
+- `--storage` : Specifier l'endroit ou se trouve la base à importer, si rien n'est précisé, une destination par défaut est        utilisée
 
 ## Standalone
 

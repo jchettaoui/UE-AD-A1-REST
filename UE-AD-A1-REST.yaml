@@ -1,0 +1,761 @@
+type: collection.insomnia.rest/5.0
+name: IMT-ArchiDistrib-TP-REST
+meta:
+  id: wrk_43cacf69db3347f69749d9e380a0c37f
+  created: 1763649705982
+  modified: 1763649705982
+  description: ""
+collection:
+  - name: users
+    meta:
+      id: fld_bb5d5644f09b42fc897fc5a104b0793b
+      created: 1760013650359
+      modified: 1760099503534
+      sortKey: -1760013650359
+      description: ""
+    children:
+      - url: http://localhost:3203/users/chris_rivers
+        name: Get user by id
+        meta:
+          id: req_2f2f894fedfe406a9176da6fc0092ee9
+          created: 1760013653077
+          modified: 1763503106025
+          isPrivate: false
+          description: ""
+          sortKey: -1760013653077
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3203/users/test123
+        name: Delete user by id (A/S)
+        meta:
+          id: req_bd5ad253c58d4856ba3905aacebe794f
+          created: 1760013780212
+          modified: 1763649900673
+          isPrivate: false
+          description: ""
+          sortKey: -1759971229994.875
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+            id: pair_b4d48de3a6334132b241d0c9e1ed9b22
+          - id: pair_c967427fdee2433c98373aa5c7e25d1b
+            name: Authorization
+            value: test123
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3203/users/chris_rivers/admin
+        name: Is user an admin
+        meta:
+          id: req_95c005b3b74849d08142b19d7b600c6e
+          created: 1760013853268
+          modified: 1763503024655
+          isPrivate: false
+          description: ""
+          sortKey: -1759928806912.75
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3203/users/chris_rivers/admin/yes
+        name: Promote user as admin (A)
+        meta:
+          id: req_1c9ad44db2cd49e0b29b073c43c0ce90
+          created: 1760013873408
+          modified: 1763649923133
+          isPrivate: false
+          description: ""
+          sortKey: -1759801537666.375
+        method: PUT
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+            id: pair_c2189d8f07114c9299793ef4d1e33f53
+          - id: pair_211d56185f914ed7b8eb5eaa92d7b350
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3203/users/chris_rivers/admin/no
+        name: Demote admin as user (A)
+        meta:
+          id: req_eff63d1c01ee4337b7bedeb112f2c59c
+          created: 1760013882565
+          modified: 1763649932019
+          isPrivate: false
+          description: ""
+          sortKey: -1759737903043.1875
+        method: PUT
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+            id: pair_e6e22ea37d9b402699d7299d6d3ba266
+          - id: pair_fccba47c971b489c956c0d27e36b0d7e
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3203/users/test123/Dummy
+        name: Create user by id and name
+        meta:
+          id: req_73803d7e0e1e46509a054bf9145f729c
+          created: 1760013934901
+          modified: 1760013945927
+          isPrivate: false
+          description: ""
+          sortKey: -1759950018453.8125
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3203/users/test123/Dummy2
+        name: Rename user by id (A/S)
+        meta:
+          id: req_9aef4d33206747488e10bf4b7415352f
+          created: 1760013966893
+          modified: 1763503022669
+          isPrivate: false
+          description: ""
+          sortKey: -1759939412683.2812
+        method: PUT
+        parameters:
+          - name: ""
+            value: ""
+            disabled: false
+            id: pair_c14c5c055b83458e8741a7f8b56d626a
+        headers:
+          - name: User-Agent
+            value: insomnia/11.6.1
+          - name: Authorization
+            value: admin
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3203/users
+        name: Get all users (A)
+        meta:
+          id: req_494e8ea46a814cce8696e447ee9e82ee
+          created: 1763503000899
+          modified: 1763503173511
+          isPrivate: false
+          description: ""
+          sortKey: -1763503000899
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+          - name: Authorization
+            value: admin
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: schedule
+    meta:
+      id: fld_725aa6d3437e41d4920fe47845a9b0a6
+      created: 1763649957779
+      modified: 1763649957779
+      sortKey: -1763649957779
+      description: ""
+    children:
+      - url: http://localhost:3202/schedule/20151130
+        name: Get schedule by date
+        meta:
+          id: req_0d245b54187345f9a05b877abf518d2a
+          created: 1763712372425
+          modified: 1763714535761
+          isPrivate: false
+          description: ""
+          sortKey: -1763712372425
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3202/schedule/movie/720d006c-3a57-4b6a-b18f-9b713b073f3c
+        name: Get schedule by movie id
+        meta:
+          id: req_fd6c91b04cc74c76877040714745db78
+          created: 1763712509716
+          modified: 1763714620793
+          isPrivate: false
+          description: ""
+          sortKey: -1763689918391.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3202/schedule/20151130/720d006c-3a57-4b6a-b18f-9b713b073f3c
+        name: Is movie scheduled
+        meta:
+          id: req_421260449214442b921a8a310ef60352
+          created: 1763712586332
+          modified: 1763714605938
+          isPrivate: false
+          description: ""
+          sortKey: -1763678691374.75
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3202/schedule/20151130/720d006c-3a57-4b6a-b18f-9b713b073f3c
+        name: Schedule movie
+        meta:
+          id: req_3c997a9a6e1d45d1be082725b9928b2e
+          created: 1763712790061
+          modified: 1763714682705
+          isPrivate: false
+          description: ""
+          sortKey: -1763673077866.375
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_7bafb6591e764cdda8bb95eb5199deba
+          - id: pair_b999aded40c941a49bf971a260d53f58
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3202/schedule/20151131/720d006c-3a57-4b6a-b18f-9b713b073f3c
+        name: Unschedule movie
+        meta:
+          id: req_52ec85c8c4e84132aea2ab410c990f6f
+          created: 1763712923671
+          modified: 1763714664483
+          isPrivate: false
+          description: ""
+          sortKey: -1763670271112.1875
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_5c6018f641994f20840ebbcab7dad208
+          - id: pair_04feb082355745b284411fe6d9453ace
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3202/schedule/date/20151131
+        name: Unschedule all movie from a date
+        meta:
+          id: req_a03c81dcfaa140379a74385f120b0da2
+          created: 1763712998984
+          modified: 1763714701833
+          isPrivate: false
+          description: ""
+          sortKey: -1763668867735.0938
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_2c7c9371116240369850f13488f8ca9f
+          - id: pair_fbe78a6e53a346d78b99b1988a1b68ee
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3202/schedule/movie/720d006c-3a57-4b6a-b18f-9b713b073f3c
+        name: Unschedule movie from all dates
+        meta:
+          id: req_61ecbdc9b5f947799eb0b98ec0f4015f
+          created: 1763713064539
+          modified: 1763714473117
+          isPrivate: false
+          description: ""
+          sortKey: -1763668166046.5469
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_8d6de5a9f60948e5b4e7743a6e802c46
+          - id: pair_51636d0707aa4b29b0fcdee000a50652
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: booking
+    meta:
+      id: fld_8e3b2021d1ba4f27b9712bbbc6fd7110
+      created: 1763649967241
+      modified: 1763649967241
+      sortKey: -1763649967241
+      description: ""
+    children:
+      - url: http://localhost:3201/bookings
+        name: Get all bookings (A)
+        meta:
+          id: req_4937becf440e4525b982186c1c515bc6
+          created: 1763667464358
+          modified: 1763729193968
+          isPrivate: false
+          description: ""
+          sortKey: -1763667464358
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_d03ed41a34774e45989fd151d30fb8e7
+          - id: pair_200b902d9c6e4311957154896d2dfe35
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3201/booking/chris_rivers
+        name: Get user bookings (A/S)
+        meta:
+          id: req_784bc40690b742c9aa463bbc8bf19be6
+          created: 1763667522019
+          modified: 1763667552058
+          isPrivate: false
+          description: ""
+          sortKey: -1763667117975.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_d03ed41a34774e45989fd151d30fb8e7
+          - id: pair_200b902d9c6e4311957154896d2dfe35
+            name: Authorization
+            value: chris_rivers
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3201/booking/chris_rivers/20151201
+        name: Get user bookings by date (A/S)
+        meta:
+          id: req_d5ae07cdf1c34bef8fa9c8f1a2188a8b
+          created: 1763667582812
+          modified: 1763667598263
+          isPrivate: false
+          description: ""
+          sortKey: -1763666944784.25
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_d03ed41a34774e45989fd151d30fb8e7
+          - id: pair_200b902d9c6e4311957154896d2dfe35
+            name: Authorization
+            value: chris_rivers
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3201/booking/chris_rivers/20151201/267eedb8-0f5d-42d5-8f43-72426b9fb3e6
+        name: Create booking (A/S)
+        meta:
+          id: req_1e11a9153b18488b81959bf56215dad6
+          created: 1763667794663
+          modified: 1763667896502
+          isPrivate: false
+          description: ""
+          sortKey: -1763666858188.625
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_d03ed41a34774e45989fd151d30fb8e7
+          - id: pair_200b902d9c6e4311957154896d2dfe35
+            name: Authorization
+            value: chris_rivers
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3201/booking/chris_rivers/20151201/267eedb8-0f5d-42d5-8f43-72426b9fb3e6
+        name: Delete booking (A/S)
+        meta:
+          id: req_999b48663e79457fa1de436a217c2799
+          created: 1763667963868
+          modified: 1763667966495
+          isPrivate: false
+          description: ""
+          sortKey: -1763666814890.8125
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_d03ed41a34774e45989fd151d30fb8e7
+          - id: pair_200b902d9c6e4311957154896d2dfe35
+            name: Authorization
+            value: chris_rivers
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3201/booking/chris_rivers/20151201/267eedb8-0f5d-42d5-8f43-72426b9fb3e6
+        name: Get booking details (A/S)
+        meta:
+          id: req_360db20757b44c4a8758d9eb393cd0b2
+          created: 1763668147084
+          modified: 1763668168702
+          isPrivate: false
+          description: ""
+          sortKey: -1763666901486.4375
+        method: GET
+        parameters:
+          - id: pair_7b4f0251233845fe8f30482f749f3695
+            name: details
+            value: yes
+            description: ""
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_d03ed41a34774e45989fd151d30fb8e7
+          - id: pair_200b902d9c6e4311957154896d2dfe35
+            name: Authorization
+            value: chris_rivers
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3201/booking/chris_rivers/20151201
+        name: Get user bookings by date with details (A/S)
+        meta:
+          id: req_897b6c4ae665476d8ba5bc2471775e6f
+          created: 1763668587368
+          modified: 1763668590886
+          isPrivate: false
+          description: ""
+          sortKey: -1763666923135.3438
+        method: GET
+        parameters:
+          - id: pair_be7ef01b247045b582db4480614ea79d
+            name: details
+            value: yes
+            description: ""
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_d03ed41a34774e45989fd151d30fb8e7
+          - id: pair_200b902d9c6e4311957154896d2dfe35
+            name: Authorization
+            value: chris_rivers
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: movies
+    meta:
+      id: fld_401b8b7b8e4a48268fab442283879709
+      created: 1763666768777
+      modified: 1763666768777
+      sortKey: -1763666768777
+      description: ""
+    children:
+      - url: http://localhost:3200/movies/720d006c-3a57-4b6a-b18f-9b713b073f3c
+        name: Get movie by id
+        meta:
+          id: req_998bec12c6874f70b5376feb0c30e6ba
+          created: 1763666771593
+          modified: 1763666812049
+          isPrivate: false
+          description: ""
+          sortKey: -1763666771593
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3200/moviesbytitle
+        name: Get movie by title
+        meta:
+          id: req_dcf93258bd9b4bca9b202970232e71f9
+          created: 1763671021952
+          modified: 1763671915415
+          isPrivate: false
+          description: ""
+          sortKey: -1763666177377.5
+        method: GET
+        parameters:
+          - id: pair_ed15b2e0b6e24c3f8285d974688f408a
+            name: title
+            value: The Night Before
+            description: ""
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3200/movies/720d006c-3a57-4b6a-b18f-9b713b073f3c
+        name: Create movie
+        meta:
+          id: req_be0ac9f44a4a4c7f9a12c076cb4bc0f8
+          created: 1763671112816
+          modified: 1763671637243
+          isPrivate: false
+          description: ""
+          sortKey: -1763666177277.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"title": "Dummy",
+            	"rate": 0.0,
+            	"director": "admin",
+            	"id": "dummy_film"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+            id: pair_3d40e39918a84c218978528465396dfa
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_64416033da1341fdb0d23d1c2195f688
+          - id: pair_881c5043139d4672acfe0e7f514e5daf
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3200/movies/dummy_film
+        name: Delete movie
+        meta:
+          id: req_4641991ce44c49108bf76c938ffe52b0
+          created: 1763671121569
+          modified: 1763671683633
+          isPrivate: false
+          description: ""
+          sortKey: -1763665880219.75
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_f397b5d42ebd493391dfb6df625aaf18
+          - id: pair_f82d89b5858c43f9beb8c207afe8f4c8
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:3200/movies/267eedb8-0f5d-42d5-8f43-72426b9fb3e6/3
+        name: Update movie rating
+        meta:
+          id: req_111824ae56dc47c4bf96f209571c86cb
+          created: 1763671191898
+          modified: 1763721957139
+          isPrivate: false
+          description: ""
+          sortKey: -1763665880119.75
+        method: PUT
+        headers:
+          - name: User-Agent
+            value: insomnia/12.0.0
+            id: pair_92d962c492b74350919d2a2bffe82aa6
+          - id: pair_378ffde1f7ca4e2fb7ad66c8557da571
+            name: Authorization
+            value: admin
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_189230c7c2e329f0a443dc8beb37c3f99c116402
+    created: 1763649705987
+    modified: 1763649705987
+environments:
+  name: Base Environment
+  meta:
+    id: env_189230c7c2e329f0a443dc8beb37c3f99c116402
+    created: 1763649705985
+    modified: 1763649705985
+    isPrivate: false
